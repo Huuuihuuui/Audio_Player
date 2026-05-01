@@ -276,130 +276,130 @@
                 <Border Grid.Column="2" Background="{StaticResource BrushGradientDetail}"
                         CornerRadius="12" Padding="16"
                         VerticalAlignment="Stretch" Margin="0,0,0,16">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <StackPanel>
-                            <!-- 封面图（180×180 + 圆角 12 + 小阴影） -->
-                            <Border Width="180" Height="180"
-                                    Background="{StaticResource BrushBorder}" CornerRadius="12"
-                                    HorizontalAlignment="Center" Margin="0,0,0,12"
-                                    Effect="{StaticResource ShadowSmall}">
-                                <Image Source="{Binding CoverImageData, Converter={StaticResource BytesToImageConverter}}"
-                                       Stretch="Uniform"/>
-                            </Border>
+                    <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>       <!-- 上方可滚动内容 -->
+                                <RowDefinition Height="Auto"/>     <!-- 频谱分隔线 -->
+                                <RowDefinition Height="Auto"/>     <!-- 频谱固定在底部 -->
+                            </Grid.RowDefinitions>
 
-                            <!-- 歌曲名称 -->
-                            <TextBlock Text="{Binding DetailTitle}"
-                                       FontSize="18" FontWeight="SemiBold"
-                                       Foreground="{StaticResource BrushTextPrimary}"
-                                       TextWrapping="Wrap"
-                                       TextTrimming="CharacterEllipsis"
-                                       Margin="0,0,0,4"/>
+                            <!-- 可滚动内容：封面 + 信息 + 歌词 -->
+                            <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+                                <StackPanel>
+                                    <Border Width="180" Height="180"
+                                            Background="{StaticResource BrushBorder}" CornerRadius="12"
+                                            HorizontalAlignment="Center" Margin="0,0,0,12"
+                                            Effect="{StaticResource ShadowSmall}">
+                                        <Image Source="{Binding CoverImageData, Converter={StaticResource BytesToImageConverter}}"
+                                               Stretch="Uniform"/>
+                                    </Border>
 
-                            <!-- 艺术家 -->
-                            <TextBlock Text="{Binding DetailArtist}"
-                                       FontSize="13" Foreground="{StaticResource BrushAccent}"
-                                       TextWrapping="Wrap" Margin="0,0,0,12"/>
+                                    <TextBlock Text="{Binding DetailTitle}"
+                                               FontSize="18" FontWeight="SemiBold"
+                                               Foreground="{StaticResource BrushTextPrimary}"
+                                               TextWrapping="Wrap"
+                                               TextTrimming="CharacterEllipsis"
+                                               Margin="0,0,0,4"/>
 
-                            <!-- 信息分隔线：歌曲名+艺术家 / 元数据信息 -->
-                            <Border Background="{StaticResource BrushBorder}" Height="1" Margin="0,0,0,10" Opacity="0.6"/>
+                                    <TextBlock Text="{Binding DetailArtist}"
+                                               FontSize="13" Foreground="{StaticResource BrushAccent}"
+                                               TextWrapping="Wrap" Margin="0,0,0,12"/>
 
-                            <!-- 专辑 -->
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
-                                <TextBlock Text="专辑" Foreground="{StaticResource BrushTextTertiary}"
-                                           FontSize="11" Width="50"/>
-                                <TextBlock Text="{Binding DetailAlbum}"
-                                           Foreground="{StaticResource BrushTextPrimary}" FontSize="11"
-                                           TextTrimming="CharacterEllipsis"/>
-                            </StackPanel>
+                                    <Border Background="{StaticResource BrushBorder}" Height="1" Margin="0,0,0,10" Opacity="0.6"/>
 
-                            <!-- 格式 -->
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
-                                <TextBlock Text="格式" Foreground="{StaticResource BrushTextTertiary}"
-                                           FontSize="11" Width="50"/>
-                                <TextBlock Text="{Binding DetailFormat}"
-                                           Foreground="{StaticResource BrushTextPrimary}" FontSize="11"/>
-                            </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                        <TextBlock Text="专辑" Foreground="{StaticResource BrushTextTertiary}"
+                                                   FontSize="11" Width="50"/>
+                                        <TextBlock Text="{Binding DetailAlbum}"
+                                                   Foreground="{StaticResource BrushTextPrimary}" FontSize="11"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                    </StackPanel>
 
-                            <!-- 音频规格 -->
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
-                                <TextBlock Text="规格" Foreground="{StaticResource BrushTextTertiary}"
-                                           FontSize="11" Width="50"/>
-                                <TextBlock Text="{Binding DetailSpecs}"
-                                           Foreground="{StaticResource BrushTextPrimary}" FontSize="11"/>
-                            </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                        <TextBlock Text="格式" Foreground="{StaticResource BrushTextTertiary}"
+                                                   FontSize="11" Width="50"/>
+                                        <TextBlock Text="{Binding DetailFormat}"
+                                                   Foreground="{StaticResource BrushTextPrimary}" FontSize="11"/>
+                                    </StackPanel>
 
-                            <!-- 歌词分隔线 -->
-                            <Border Background="{StaticResource BrushBorder}" Height="1" Margin="0,12,0,8" Opacity="0.6"/>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                        <TextBlock Text="规格" Foreground="{StaticResource BrushTextTertiary}"
+                                                   FontSize="11" Width="50"/>
+                                        <TextBlock Text="{Binding DetailSpecs}"
+                                                   Foreground="{StaticResource BrushTextPrimary}" FontSize="11"/>
+                                    </StackPanel>
 
-                            <!-- 歌词区：标题 + ◀▶ 偏移微调按钮 + 行列表（当前行红色加粗） -->
-                            <Grid Margin="0,0,0,4">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="歌词" FontSize="11"
-                                           Foreground="{StaticResource BrushTextTertiary}" VerticalAlignment="Center"/>
-                                <StackPanel Grid.Column="2" Orientation="Horizontal">
-                                    <Button x:Name="LyricBackBtn" Content="◀" Click="LyricBackward_Click"
-                                            Background="Transparent" Foreground="{StaticResource BrushTextTertiary}"
-                                            BorderThickness="0" FontSize="8" Padding="2"
-                                            Cursor="Hand"/>
-                                    <TextBlock Text="{Binding LyricOffset, StringFormat={}{0:+#0.0;-#0.0;s}}"
-                                               FontSize="9" Foreground="{StaticResource BrushTextTertiary}"
-                                               VerticalAlignment="Center" Margin="2,0"/>
-                                    <Button x:Name="LyricFwdBtn" Content="▶" Click="LyricForward_Click"
-                                            Background="Transparent" Foreground="{StaticResource BrushTextTertiary}"
-                                            BorderThickness="0" FontSize="8" Padding="2"
-                                            Cursor="Hand"/>
+                                    <Border Background="{StaticResource BrushBorder}" Height="1" Margin="0,12,0,8" Opacity="0.6"/>
+
+                                    <Grid Margin="0,0,0,4">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="歌词" FontSize="11"
+                                                   Foreground="{StaticResource BrushTextTertiary}" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="2" Orientation="Horizontal">
+                                            <Button x:Name="LyricBackBtn" Content="◀" Click="LyricBackward_Click"
+                                                    Background="Transparent" Foreground="{StaticResource BrushTextTertiary}"
+                                                    BorderThickness="0" FontSize="8" Padding="2"
+                                                    Cursor="Hand"/>
+                                            <TextBlock Text="{Binding LyricOffset, StringFormat={}{0:+#0.0;-#0.0;s}}"
+                                                       FontSize="9" Foreground="{StaticResource BrushTextTertiary}"
+                                                       VerticalAlignment="Center" Margin="2,0"/>
+                                            <Button x:Name="LyricFwdBtn" Content="▶" Click="LyricForward_Click"
+                                                    Background="Transparent" Foreground="{StaticResource BrushTextTertiary}"
+                                                    BorderThickness="0" FontSize="8" Padding="2"
+                                                    Cursor="Hand"/>
+                                        </StackPanel>
+                                    </Grid>
+                                    <Border Background="Transparent" CornerRadius="6"
+                                            Height="100" Padding="6,4">
+                                        <ScrollViewer x:Name="LyricsScrollViewer"
+                                                      VerticalScrollBarVisibility="Hidden"
+                                                      CanContentScroll="False">
+                                            <ItemsControl x:Name="LyricsItemsControl"
+                                                          ItemsSource="{Binding LyricsLines}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Text}"
+                                                                   FontSize="12"
+                                                                   Margin="0,2"
+                                                                   TextWrapping="Wrap">
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="TextBlock">
+                                                                    <Setter Property="Foreground" Value="{StaticResource BrushTextTertiary}"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding IsCurrent}" Value="True">
+                                                                            <Setter Property="Foreground" Value="{StaticResource BrushAccent}"/>
+                                                                            <Setter Property="FontWeight" Value="Bold"/>
+                                                                            <Setter Property="FontSize" Value="12"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBlock.Style>
+                                                        </TextBlock>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </ScrollViewer>
+                                    </Border>
                                 </StackPanel>
-                            </Grid>
-                            <Border Background="{StaticResource BrushDarkWell}" CornerRadius="6"
-                                    Height="100" Padding="6,4">
-                                <ScrollViewer x:Name="LyricsScrollViewer"
-                                              VerticalScrollBarVisibility="Hidden"
-                                              CanContentScroll="False">
-                                    <ItemsControl x:Name="LyricsItemsControl"
-                                                  ItemsSource="{Binding LyricsLines}">
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding Text}"
-                                                           FontSize="12"
-                                                           Margin="0,2"
-                                                           TextWrapping="Wrap">
-                                                    <TextBlock.Style>
-                                                        <Style TargetType="TextBlock">
-                                                            <Setter Property="Foreground" Value="{StaticResource BrushTextTertiary}"/>
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding IsCurrent}" Value="True">
-                                                                    <Setter Property="Foreground" Value="{StaticResource BrushAccent}"/>
-                                                                    <Setter Property="FontWeight" Value="Bold"/>
-                                                                    <Setter Property="FontSize" Value="12"/>
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </TextBlock.Style>
-                                                </TextBlock>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
-                                </ScrollViewer>
-                            </Border>
+                            </ScrollViewer>
 
                             <!-- 频谱分隔线 -->
-                            <Border Background="{StaticResource BrushBorder}" Height="1" Margin="0,8,0,6" Opacity="0.6"/>
+                            <Border Grid.Row="1" Background="{StaticResource BrushBorder}" Height="1" Margin="0,8,0,6" Opacity="0.6"/>
 
-                            <!-- 频谱可视化（64柱，多色渐变频谱） -->
-                            <views:SpectrumView x:Name="SpectrumViewControl"/>
-                        </StackPanel>
-                    </ScrollViewer>
+                            <!-- 频谱可视化（64柱，多色渐变，始终贴底） -->
+                            <views:SpectrumView Grid.Row="2" x:Name="SpectrumViewControl"/>
+                        </Grid>
                 </Border>
             </Grid>
         </Grid>
 
-    <!-- ====== 第二行：播放队列面板（UI 优化版） ====== -->
-            <Border Grid.Row="1" Background="{StaticResource BrushBgSecondary}" CornerRadius="12"
+            <!-- ====== 第二行：播放队列面板（UI 优化版） ====== -->
+            <Border Grid.Row="1" Background="{StaticResource BrushQueuePanelBg}" CornerRadius="12"
                     Margin="24,0,24,12" Effect="{StaticResource ShadowMedium}"
                     Visibility="{Binding QueuePanelVisible, Converter={StaticResource BoolToVis}}">
                 <Grid Margin="16,12">
@@ -437,9 +437,9 @@
                             <DataTemplate>
                                 <Grid Margin="4,2">
                                     <TextBlock FontSize="12">
-                                        <Run Text="{Binding Title}" Foreground="{StaticResource BrushTextPrimary}" FontWeight="Medium"/>
-                                        <Run Text=" - " Foreground="{StaticResource BrushTextTertiary}"/>
-                                        <Run Text="{Binding Artist}" Foreground="{StaticResource BrushTextTertiary}"/>
+                                        <Run Text="{Binding Title}" Foreground="{StaticResource BrushQueueItemText}" FontWeight="Medium"/>
+                                        <Run Text=" - " Foreground="{StaticResource BrushQueueItemArtist}"/>
+                                        <Run Text="{Binding Artist}" Foreground="{StaticResource BrushQueueItemArtist}"/>
                                     </TextBlock>
                                 </Grid>
                             </DataTemplate>
@@ -474,9 +474,9 @@
                     <StackPanel Grid.Column="1" VerticalAlignment="Center">
                         <!-- 按钮行：去背景、均匀间距 -->
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,4">
-                            <Button Content="{Binding PlayModeText}" Command="{Binding CyclePlayModeCommand}"
+                            <Button Content="&#xE71A;" FontFamily="Segoe MDL2 Assets" Command="{Binding StopCommand}"
                                     Background="Transparent" Foreground="{StaticResource BrushTextSecondary}" 
-                                    FontSize="14" Margin="10,0" ToolTip="切换播放模式"/>
+                                    FontSize="14" Margin="10,0" ToolTip="停止"/>
                             
                             <Button Content="&#xE892;" FontFamily="Segoe MDL2 Assets" Command="{Binding PreviousCommand}"
                                     Background="Transparent" Foreground="{StaticResource BrushTextPrimary}" 
@@ -490,9 +490,10 @@
                                     Background="Transparent" Foreground="{StaticResource BrushTextPrimary}" 
                                     FontSize="18" Margin="10,0" Padding="5"/>
 
-                            <Button Content="&#xE71A;" FontFamily="Segoe MDL2 Assets" Command="{Binding StopCommand}"
-                                    Background="Transparent" Foreground="{StaticResource BrushTextSecondary}" 
-                                    FontSize="14" Margin="10,0" ToolTip="停止"/>
+                            <Button Content="{Binding PlayModeText}" Command="{Binding CyclePlayModeCommand}"
+                            Background="Transparent" Foreground="{StaticResource BrushTextSecondary}" 
+                            FontSize="14" Margin="10,0" ToolTip="切换播放模式"/>
+
                         </StackPanel>
 
                         <!-- 进度条行：拉满 -->

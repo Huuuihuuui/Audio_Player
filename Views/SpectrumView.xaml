@@ -5,8 +5,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Height="80" Background="Transparent">
     <Grid>
-        <!-- 暗色背景 -->
-        <Border Background="{StaticResource BrushDarkWell}" CornerRadius="6"/>
+        <!-- 透明背景，透出右侧详情面板的渐变底色 -->
+        <Border Background="Transparent" CornerRadius="6"/>
 
         <!-- 频谱柱容器：水平排列，底部对齐，由 C# 代码动态填充 64 个 Rectangle -->
         <StackPanel x:Name="BarsPanel" Orientation="Horizontal"

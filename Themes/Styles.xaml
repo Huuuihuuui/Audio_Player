@@ -15,7 +15,7 @@
     <SolidColorBrush x:Key="BrushBgSecondary" Color="#9e9e9e"/>     <!-- 侧栏/次要背景：苹果风浅灰 -->
     <SolidColorBrush x:Key="BrushBgCard" Color="#FFFFFF"/>          <!-- 卡片：纯白 -->
     <SolidColorBrush x:Key="BrushDarkWell" Color="#F0F0F3"/>        <!-- 频谱/嵌入槽：浅凹陷色 -->
-    <SolidColorBrush x:Key="BrushAccent" Color="#424242"/>          <!-- 强调色：科技蓝（或保留你的红色 #E94560） -->
+    <SolidColorBrush x:Key="BrushAccent" Color="#424242"/>          <!-- 强调色 也用灰色了 -->
     
     <SolidColorBrush x:Key="BrushTextPrimary" Color="#1D1D1F"/>     <!-- 主要文字：接近黑的深灰 -->
     <SolidColorBrush x:Key="BrushTextSecondary" Color="#86868B"/>   <!-- 次要文字：中灰 -->
@@ -26,6 +26,15 @@
     <SolidColorBrush x:Key="BrushHover" Color="#11000008"/>         <!-- 悬停：极淡的黑色叠加 -->
     <SolidColorBrush x:Key="BrushSelection" Color="#007AFF15"/>     <!-- 选中：强调色的低透明度版本 -->
     <SolidColorBrush x:Key="BrushActive" Color="#007AFF20"/>        <!-- 当前播放高亮 -->
+
+    <!-- ============================================================ -->
+    <!-- 播放队列面板专用笔刷（颜色自行填充） -->
+    <!-- ============================================================ -->
+    <SolidColorBrush x:Key="BrushQueuePanelBg" Color="#e0e0e0"/>          <!-- 队列面板背景 -->
+    <SolidColorBrush x:Key="BrushQueueItemText" Color="#000000"/>         <!-- 队列项文字颜色 -->
+    <SolidColorBrush x:Key="BrushQueueItemArtist" Color="#000000"/>       <!-- 队列项艺术家文字颜色 -->
+    <SolidColorBrush x:Key="BrushQueuePlayingBg" Color="#606060"/>        <!-- 队列当前播放项背景 -->
+    <SolidColorBrush x:Key="BrushQueuePlayingText" Color="#000000"/>      <!-- 队列当前播放项文字 -->
 
     <!-- ============================================================ -->
     <!-- 阴影 -->
@@ -246,7 +255,7 @@
                                                     CornerRadius="2" MinHeight="40">
                                             </Border>
                                             <ControlTemplate.Triggers>
-                                                <!-- 悬停时变宽变深，而不是变红，这样更高级 -->
+                                                <!-- 悬停时变宽变深，这样更高级 -->
                                                 <Trigger Property="IsMouseOver" Value="True">
                                                     <Setter TargetName="ThumbBorder" Property="Background" Value="{StaticResource BrushTextSecondary}"/>
                                                     <Setter TargetName="ThumbBorder" Property="Opacity" Value="0.8"/>
@@ -428,7 +437,7 @@
                     </MultiBinding>
                 </DataTrigger.Binding>
                 <!-- 这里的深灰色建议使用 #E5E5E7 或 #D1D1D6 左右的色值 -->
-                <Setter Property="Background" Value="#cdcdcd"/> 
+                <Setter Property="Background" Value="#dddddd"/> 
                 <Setter Property="Foreground" Value="{StaticResource BrushAccent}"/>
                 <Setter Property="FontWeight" Value="Bold"/>
             </DataTrigger>
@@ -477,6 +486,7 @@
             </Setter.Value>
         </Setter>
     </Style>
+
 
     <!-- 底部导航栏调用 -->
     <!-- 歌名样式 -->

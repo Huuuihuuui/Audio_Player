@@ -11,7 +11,6 @@ namespace MusicPlayer;
 public partial class MainWindow : Window
 {
     private MainViewModel VM => (MainViewModel)DataContext;
-    private int _queueHighlightIndex = -1;
 
     public MainWindow()
     {
@@ -24,21 +23,6 @@ public partial class MainWindow : Window
             for (int i = 0; i < 64 && i < samples.Length; i++)
                 bars[i] = Math.Clamp(samples[i], 0, 1);
             Dispatcher.Invoke(() => SpectrumViewControl.UpdateBars(bars));
-        };
-
-        // 队列位置变化 → 高亮当前项
-        VM.QueueIndexChanged += idx =>
-        {
-            _queueHighlightIndex = idx;
-            ApplyQueueHighlight();
-        };
-
-        // 播放列表面板从隐藏变为可见时，容器重新生成，需重新应用高亮
-        QueueListBox.IsVisibleChanged += (_, _) =>
-        {
-            if (QueueListBox.IsVisible)
-                Dispatcher.BeginInvoke(new Action(ApplyQueueHighlight),
-                    System.Windows.Threading.DispatcherPriority.Loaded);
         };
 
         // 歌词变化 → 平滑滚动到当前行
@@ -261,21 +245,6 @@ public partial class MainWindow : Window
             parent = VisualTreeHelper.GetParent(parent);
         }
         return null;
-    }
-
-    // 将队列高亮应用到 QueueListBox 的所有容器
-    private void ApplyQueueHighlight()
-    {
-        var idx = _queueHighlightIndex;
-        for (int i = 0; i < QueueListBox.Items.Count; i++)
-        {
-            if (QueueListBox.ItemContainerGenerator.ContainerFromIndex(i) is ListBoxItem container)
-            {
-                container.Background = i == idx
-                    ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#e9456030"))
-                    : Brushes.Transparent;
-            }
-        }
     }
 
     // 歌词微调

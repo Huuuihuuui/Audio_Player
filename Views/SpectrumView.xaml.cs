@@ -21,9 +21,9 @@ public partial class SpectrumView : UserControl
     private static Color[] BuildColorGradient()
     {
         var colors = new Color[BarCount];
-        var low = Color.FromRgb(0xE9, 0x45, 0x60);   // #e94560
-        var mid = Color.FromRgb(0xFF, 0x6B, 0x6B);   // #ff6b6b
-        var high = Color.FromRgb(0xFF, 0xD9, 0x3D);  // #ffd93d
+        var low = Color.FromRgb(0x5B, 0x5B, 0x5B);   // #5b5b5b
+        var mid = Color.FromRgb(0x91, 0x91, 0x91);   // #919191
+        var high = Color.FromRgb(0xE6, 0xE6, 0xE6);  // #e6e6e6
 
         for (int i = 0; i < BarCount; i++)
         {
