@@ -85,6 +85,12 @@ public class MainViewModel : BaseViewModel
             OnPropertyChanged(nameof(CurrentPositionText));
             OnPropertyChanged(nameof(ProgressPercent));
             UpdateLyrics();
+
+
+            OnPropertyChanged(nameof(TotalDurationSeconds));
+            OnPropertyChanged(nameof(TotalDurationText));
+
+        
         };
 
         // 播放结束自动切下一首
@@ -293,6 +299,9 @@ public class MainViewModel : BaseViewModel
     // 当前播放位置的格式化文本（如 "1:23"）
     public string CurrentPositionText => FormatTime(_playback.CurrentPositionSeconds);
 
+    // 总播放时长的格式化文本
+    public string TotalDurationText => FormatTime(_playback.TotalDurationSeconds);
+
     // 进度百分比（0~100），Slider 双向绑定
     public double ProgressPercent
     {
@@ -319,12 +328,13 @@ public class MainViewModel : BaseViewModel
     }
 
     private string _currentSongTitle = "未在播放";
-    // 当前播放歌曲的标题-艺术家文字（显示在播放栏）
+    // 当前播放歌曲的标题-歌手名
     public string CurrentSongTitle
     {
         get => _currentSongTitle;
         set => SetProperty(ref _currentSongTitle, value);
     }
+
 
     // ========== 右侧详情面板属性 ==========
     private string _detailTitle = "未在播放";
@@ -410,6 +420,7 @@ public class MainViewModel : BaseViewModel
         var list = Songs.ToList();
         var idx = list.IndexOf(song);
         SetQueueAndPlay(list, Math.Max(0, idx));
+
     }
 
     private async void UpdateSongDetail(Song song)
@@ -468,6 +479,7 @@ public class MainViewModel : BaseViewModel
             LyricsLines.Clear();
             foreach (var l in _lyrics.Lyrics) LyricsLines.Add(l);
             CurrentSongTitle = $"{SelectedSong.Title} - {SelectedSong.Artist}";
+
 
             // 填充右侧详情面板
             DetailTitle = SelectedSong.Title;

@@ -1,4 +1,4 @@
-// 频谱可视化控件 —— 64 根柱子，EMA 平滑过渡动画
+// 频谱可视化控件 —— 64 根柱子，多色渐变 + EMA 平滑过渡
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -9,11 +9,40 @@ namespace MusicPlayer.Views;
 public partial class SpectrumView : UserControl
 {
     private const int BarCount = 64;
-    private const float Smoothing = 0.45f;      // EMA 平滑（0=冻结, 1=无平滑）
-    private const float DisplayGain = 1.5f;      // 显示增益：>1 整体抬高，<1 压暗
+    private const float Smoothing = 0.45f;
+    private const float DisplayGain = 1.5f;
     private readonly Rectangle[] _bars = new Rectangle[BarCount];
     private readonly double[] _current = new double[BarCount];
     private bool _initialized;
+
+    // 预计算的频谱柱颜色数组：低频红 → 中频亮红 → 高频金
+    private static readonly Color[] BarColors = BuildColorGradient();
+
+    private static Color[] BuildColorGradient()
+    {
+        var colors = new Color[BarCount];
+        var low = Color.FromRgb(0xE9, 0x45, 0x60);   // #e94560
+        var mid = Color.FromRgb(0xFF, 0x6B, 0x6B);   // #ff6b6b
+        var high = Color.FromRgb(0xFF, 0xD9, 0x3D);  // #ffd93d
+
+        for (int i = 0; i < BarCount; i++)
+        {
+            float t = i / (float)(BarCount - 1);
+            if (t < 0.5f)
+                colors[i] = LerpColor(low, mid, t / 0.5f);
+            else
+                colors[i] = LerpColor(mid, high, (t - 0.5f) / 0.5f);
+        }
+        return colors;
+    }
+
+    private static Color LerpColor(Color a, Color b, float t)
+    {
+        return Color.FromRgb(
+            (byte)(a.R + (b.R - a.R) * t),
+            (byte)(a.G + (b.G - a.G) * t),
+            (byte)(a.B + (b.B - a.B) * t));
+    }
 
     public SpectrumView()
     {
@@ -24,7 +53,9 @@ public partial class SpectrumView : UserControl
             var rect = new Rectangle
             {
                 Width = 2.5,
-                Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#e94560")),
+                RadiusX = 2,
+                RadiusY = 2,
+                Fill = new SolidColorBrush(BarColors[i]),
                 VerticalAlignment = VerticalAlignment.Bottom,
                 Margin = new Thickness(0.5, 0, 0.5, 0),
                 Height = 0.5
@@ -40,12 +71,11 @@ public partial class SpectrumView : UserControl
         {
             var test = new float[BarCount];
             for (int i = 0; i < BarCount; i++)
-                test[i] = (i + 1) / (float)BarCount; // 0~1 测试值
+                test[i] = (i + 1) / (float)BarCount;
             UpdateBars(test);
         };
     }
 
-    // 外部调用：更新频谱柱高度（values 范围为 0~1），内部做 EMA 平滑并 ×80 转像素
     public void UpdateBars(float[] values)
     {
         if (!_initialized || values == null) return;
