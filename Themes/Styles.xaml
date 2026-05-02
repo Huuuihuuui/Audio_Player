@@ -23,14 +23,14 @@
     
     <SolidColorBrush x:Key="BrushBorder" Color="#E5E5E7"/>          <!-- 分割线：极淡的灰色 -->
     <SolidColorBrush x:Key="BrushButtonBg" Color="#ECECED"/>        <!-- 按钮默认色 -->
-    <SolidColorBrush x:Key="BrushHover" Color="#11000008"/>         <!-- 悬停：极淡的黑色叠加 -->
-    <SolidColorBrush x:Key="BrushSelection" Color="#007AFF15"/>     <!-- 选中：强调色的低透明度版本 -->
+    <SolidColorBrush x:Key="BrushHover" Color="#11000008"/>         <!-- 悬停 透明度大-->
+    <SolidColorBrush x:Key="BrushSelection" Color="#22000008"/>     <!-- 选中 透明度变小 -->
     <SolidColorBrush x:Key="BrushActive" Color="#007AFF20"/>        <!-- 当前播放高亮 -->
 
     <!-- ============================================================ -->
     <!-- 播放队列面板专用笔刷（颜色自行填充） -->
     <!-- ============================================================ -->
-    <SolidColorBrush x:Key="BrushQueuePanelBg" Color="#e0e0e0"/>          <!-- 队列面板背景 -->
+    <SolidColorBrush x:Key="BrushQueuePanelBg" Color="#d0d0d0"/>          <!-- 队列面板背景 -->
     <SolidColorBrush x:Key="BrushQueueItemText" Color="#000000"/>         <!-- 队列项文字颜色 -->
     <SolidColorBrush x:Key="BrushQueueItemArtist" Color="#000000"/>       <!-- 队列项艺术家文字颜色 -->
     <SolidColorBrush x:Key="BrushQueuePlayingBg" Color="#606060"/>        <!-- 队列当前播放项背景 -->
@@ -154,11 +154,10 @@
         </Style.Triggers>
     </Style>
 
-    <!-- 优化后的播放/暂停按钮：纯图标、无背景 -->
+    <!-- 播放/暂停按钮：圆形灰色背景 + 图标 -->
     <Style x:Key="PlayPauseButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Foreground" Value="{StaticResource BrushAccent}"/> <!-- 图标用强调色 -->
-        <Setter Property="FontSize" Value="24"/> <!-- 稍微加大图标字号补偿视觉重心 -->
+        <Setter Property="Foreground" Value="{StaticResource BrushAccent}"/>
+        <Setter Property="FontSize" Value="24"/>
         <Setter Property="Width" Value="40"/>
         <Setter Property="Height" Value="40"/>
         <Setter Property="Padding" Value="0"/>
@@ -166,13 +165,13 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Grid Background="Transparent"> <!-- 透明背景扩大点击热区 -->
+                    <Grid>
+                        <Ellipse x:Name="BgCircle" Fill="{StaticResource BrushButtonBg}" Width="40" Height="40"/>
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Grid>
                     <ControlTemplate.Triggers>
-                        <!-- 悬停时通过改变图标颜色或亮度反馈，而不是背景 -->
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Opacity" Value="0.7"/>
+                            <Setter TargetName="BgCircle" Property="Fill" Value="{StaticResource BrushBorder}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -372,22 +371,20 @@
         <Setter Property="BorderThickness" Value="0"/>
     </Style>
 
-    <!-- ToolTip：轻盈的提示气泡 -->
     <Style TargetType="ToolTip">
-        <Setter Property="Background" Value="{StaticResource BrushBgCard}"/>
-        <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource BrushBorder}"/>
-        <Setter Property="Padding" Value="10,6"/>
+        <Setter Property="Background" Value="#E6212121"/> <!-- 深色半透明背景 -->
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Padding" Value="8,4"/>
+        <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="FontSize" Value="11"/>
+        <Setter Property="HasDropShadow" Value="True"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ToolTip">
                     <Border Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="1"
-                            CornerRadius="6"
-                            Effect="{StaticResource ShadowSmall}">
-                        <ContentPresenter/>
+                            CornerRadius="4"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter />
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -460,7 +457,7 @@
     </Style>
 
     <!-- 专门给音量条用的样式：取消悬停变色 -->
-    <Style x:Key="VolumeSliderStyle" TargetType="Slider" BasedOn="{StaticResource {x:Type Slider}}">
+    <Style x:Key="SliderStyle" TargetType="Slider" BasedOn="{StaticResource {x:Type Slider}}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Slider">
@@ -468,7 +465,14 @@
                         <Border Background="{StaticResource BrushBorder}" Height="3" CornerRadius="1.5" VerticalAlignment="Center"/>
                         <Track x:Name="PART_Track">
                             <Track.DecreaseRepeatButton>
-                                <RepeatButton Background="{StaticResource BrushAccent}" Height="3" BorderThickness="0"/>
+                                <RepeatButton Background="{StaticResource BrushAccent}" Height="3" BorderThickness="0">
+                                    <RepeatButton.Template>
+                                        <ControlTemplate TargetType="RepeatButton">
+                                            <!-- 纯色填充，无任何交互逻辑 -->
+                                            <Border Background="{TemplateBinding Background}"/>
+                                        </ControlTemplate>
+                                    </RepeatButton.Template>
+                                </RepeatButton>
                             </Track.DecreaseRepeatButton>
                             <Track.Thumb>
                                 <Thumb Width="10" Height="10">

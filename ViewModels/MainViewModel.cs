@@ -36,7 +36,6 @@ public class MainViewModel : BaseViewModel
 
         // 初始化命令
         PlayPauseCommand = new RelayCommand(PlayPause);
-        StopCommand = new RelayCommand(Stop);
         NextCommand = new AsyncRelayCommand(Next);
         PreviousCommand = new AsyncRelayCommand(Previous);
         ScanFolderCommand = new AsyncRelayCommand(ScanFolder);
@@ -76,6 +75,7 @@ public class MainViewModel : BaseViewModel
         {
             OnPropertyChanged(nameof(IsPlaying));
             OnPropertyChanged(nameof(PlayPauseText));
+            OnPropertyChanged(nameof(PlayPauseStatusText));
         };
 
         // 订阅播放位置变化 → 更新进度条和歌词
@@ -225,7 +225,7 @@ public class MainViewModel : BaseViewModel
     public bool IsPlaying => _playback.State == PlaybackState.Playing;
 
     // 播放/暂停按钮文本：播放中显示"⏸"，否则显示"▶"
-    public string PlayPauseText => _playback.State == PlaybackState.Playing ? "⏸" : "▶";
+    public string PlayPauseText => _playback.State == PlaybackState.Playing ? "\uE769" : "\uE768";
 
     // 播放模式
     private PlayMode _playMode = PlayMode.ListLoop;
@@ -245,10 +245,10 @@ public class MainViewModel : BaseViewModel
     }
     public string PlayModeText => CurrentPlayMode switch
     {
-        PlayMode.ListLoop => "🔁",
-        PlayMode.SingleRepeat => "🔂",
-        PlayMode.Shuffle => "🔀",
-        _ => "🔁"
+        PlayMode.ListLoop => "\uE8EE",
+        PlayMode.SingleRepeat => "\uE8ED",
+        PlayMode.Shuffle => "\uE8B1",
+        _ => "\uE8EE"
     };
 
     private void CyclePlayMode()
@@ -389,7 +389,6 @@ public class MainViewModel : BaseViewModel
 
     // ========== 命令（绑定到 View 按钮） ==========
     public ICommand PlayPauseCommand { get; }
-    public ICommand StopCommand { get; }
     public ICommand NextCommand { get; }
     public ICommand PreviousCommand { get; }
     public ICommand ScanFolderCommand { get; }
@@ -509,14 +508,6 @@ public class MainViewModel : BaseViewModel
         }
         catch { }
         return null;
-    }
-
-    // 停止播放，清空当前歌曲和歌词信息
-    private void Stop()
-    {
-        _playback.Stop();
-        CurrentSongTitle = "未在播放";
-        CurrentLyricLine = string.Empty;
     }
 
     // 下一首：从播放队列取
@@ -916,4 +907,16 @@ public class MainViewModel : BaseViewModel
         var ts = TimeSpan.FromSeconds(seconds);
         return ts.Hours > 0 ? ts.ToString(@"h\:mm\:ss") : ts.ToString(@"m\:ss");
     }
+
+    // 播放模式提示
+    public string PlayModeDescription => CurrentPlayMode switch
+    {
+        PlayMode.ListLoop    => "列表循环",
+        PlayMode.SingleRepeat => "单曲循环",
+        PlayMode.Shuffle => "随机播放",
+        _                 => "播放模式"
+    };
+
+    // 播放状态提示
+    public string PlayPauseStatusText => _playback.State == PlaybackState.Playing ? "暂停" : "播放";
 }
