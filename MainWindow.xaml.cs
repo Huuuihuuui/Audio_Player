@@ -22,7 +22,7 @@ public partial class MainWindow : Window
             var bars = new float[64];
             for (int i = 0; i < 64 && i < samples.Length; i++)
                 bars[i] = Math.Clamp(samples[i], 0, 1);
-            Dispatcher.Invoke(() => SpectrumViewControl.UpdateBars(bars));
+            SpectrumViewControl.UpdateBars(bars);
         };
 
         // 歌词变化 → 平滑滚动到当前行
@@ -60,10 +60,16 @@ public partial class MainWindow : Window
             VM.PlaySong(song);
     }
 
-    // 左侧导航栏切换
+    // 阻止右键选中导航项
+    private void NavListBox_PreviewRightDown(object sender, MouseButtonEventArgs e)
+    {
+        e.Handled = true;
+    }
+
+    // 左侧导航栏切换（仅左键触发，右键不跳转）
     private async void NavListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (VM == null) return;
+        if (VM == null || Mouse.RightButton == MouseButtonState.Pressed) return;
         var item = NavListBox.SelectedItem as ListBoxItem;
         if (item?.Tag is not string tag) return;
         switch (tag)
@@ -87,13 +93,31 @@ public partial class MainWindow : Window
         }
     }
 
-    // 歌单选中 → 取消顶部导航选中 + 加载歌单歌曲
+    // 歌单右键菜单关闭后取消高亮
+    private void PlaylistContextMenu_Closed(object sender, RoutedEventArgs e)
+    {
+        VM.SelectedPlaylist = null;
+    }
+
+    // 歌单选中 → 取消顶部导航选中 + 加载歌单歌曲（仅左键）
     private async void PlaylistNavBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
+        if (Mouse.RightButton == MouseButtonState.Pressed) return;
         if (VM.SelectedPlaylist != null)
         {
             NavListBox.SelectedItem = null;
             await VM.LoadPlaylistSongs();
+        }
+    }
+
+    // 右键菜单弹窗前拦截：点空白区域不弹菜单
+    private void SongListBox_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+    {
+        var hitElement = SongListBox.InputHitTest(Mouse.GetPosition(SongListBox));
+        if (hitElement is not DependencyObject dep
+            || FindVisualParent<ListBoxItem>(dep) == null)
+        {
+            e.Handled = true; // 阻止菜单弹出
         }
     }
 
@@ -114,16 +138,6 @@ public partial class MainWindow : Window
                 toRemove.Add(item);
         }
         foreach (var r in toRemove) SongContextMenu.Items.Remove(r);
-
-        // 右键点空白区域时不显示歌单/队列操作
-        var hitElement = SongListBox.InputHitTest(Mouse.GetPosition(SongListBox));
-        if (hitElement is not DependencyObject dep
-            || FindVisualParent<ListBoxItem>(dep) == null)
-        {
-            AddToPlaylistMenu.Items.Clear();
-            AddToPlaylistMenu.Items.Add(new MenuItem { Header = "(请先选中歌曲)", IsEnabled = false });
-            return;
-        }
 
         if (SongListBox.SelectedItem is not Song selectedSong)
         {

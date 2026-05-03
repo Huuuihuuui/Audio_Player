@@ -54,9 +54,12 @@ public class PlaybackService : IDisposable
     public event Action? PlaybackFinished;
 
     private System.Timers.Timer? _positionTimer;
+    private readonly System.Threading.SynchronizationContext? _uiContext;
 
     public PlaybackService()
     {
+        _uiContext = System.Threading.SynchronizationContext.Current;
+
         _positionTimer = new System.Timers.Timer(100);
         _positionTimer.Elapsed += (_, _) =>
         {
@@ -249,12 +252,17 @@ public class PlaybackService : IDisposable
 
     private void OnPlaybackStopped(object? sender, StoppedEventArgs e)
     {
-        if (State == PlaybackState.Playing)
-        {
-            State = PlaybackState.Stopped;
-            _positionTimer?.Stop();
+        if (State != PlaybackState.Playing)
+            return;
+
+        State = PlaybackState.Stopped;
+        _positionTimer?.Stop();
+
+        // NAudio 回调在后台线程，封送回 UI 线程再触发 PlaybackFinished
+        if (_uiContext != null)
+            _uiContext.Post(_ => PlaybackFinished?.Invoke(), null);
+        else
             PlaybackFinished?.Invoke();
-        }
     }
 
     public void Dispose()

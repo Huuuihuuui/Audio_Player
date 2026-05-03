@@ -26,7 +26,11 @@ public partial class App : Application
             args.SetObserved();
         };
 
-        using var db = new MusicDbContext();
-        db.Database.Migrate();
+        // 数据库迁移放到后台线程，不阻塞窗口启动
+        Task.Run(() =>
+        {
+            using var db = new MusicDbContext();
+            db.Database.Migrate();
+        });
     }
 }

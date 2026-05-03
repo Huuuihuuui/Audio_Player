@@ -60,7 +60,7 @@ public class MainViewModel : BaseViewModel
         // 启动频谱数据采集定时器
         _spectrumTimer = new System.Windows.Threading.DispatcherTimer
         {
-            Interval = TimeSpan.FromMilliseconds(8) //每 8ms 刷新一次频谱数据 125fps
+            Interval = TimeSpan.FromMilliseconds(16) // 降低 UI 线程压力
         };
         _spectrumTimer.Tick += (_, _) =>
         {
@@ -99,14 +99,25 @@ public class MainViewModel : BaseViewModel
             await Next();
         };
 
-        // 异步加载初始数据
-        RefreshData().ConfigureAwait(false);
+        // 异步加载初始数据（不 await，火发后忘；ConfigureAwait 默认 true 保证回到 UI 线程更新集合）
+        _ = RefreshData();
     }
 
     // ========== 数据绑定属性 ==========
 
-    // 歌曲列表（主视图列表数据源）
-    public ObservableCollection<Song> Songs { get; } = new();
+    // 歌曲列表（主视图列表数据源，整体替换避免逐条 Add 导致 UI 卡顿）
+    private ObservableCollection<Song> _songs = new();
+    public ObservableCollection<Song> Songs
+    {
+        get => _songs;
+        set => SetProperty(ref _songs, value);
+    }
+
+    // 一键替换歌曲列表，批量操作只触发一次 UI 刷新
+    private void ReplaceSongs(IEnumerable<Song> songs)
+    {
+        Songs = new ObservableCollection<Song>(songs);
+    }
 
     // 歌单列表（左侧导航数据源）
     public ObservableCollection<Playlist> Playlists { get; } = new();
@@ -424,24 +435,30 @@ public class MainViewModel : BaseViewModel
 
     private async void UpdateSongDetail(Song song)
     {
-        CurrentPlayingSong = song;
-        _lyrics.AutoLoadForAudio(song.FilePath);
-        LyricsLines.Clear();
-        foreach (var l in _lyrics.Lyrics) LyricsLines.Add(l);
-        CurrentSongTitle = $"{song.Title} - {song.Artist}";
-        CurrentLyricLine = string.Empty;
-        _lastLyricIdx = -1;
-        DetailTitle = song.Title;
-        DetailArtist = song.Artist;
-        DetailAlbum = song.Album;
-        DetailFormat = song.Format.ToUpperInvariant();
-        CoverImageData = ExtractCoverImage(song.FilePath);
-        OnPropertyChanged(nameof(DetailSpecs));
-        await _library.RecordPlayAsync(song.Id);
+        try
+        {
+            CurrentPlayingSong = song;
+            _lyrics.AutoLoadForAudio(song.FilePath);
+            LyricsLines.Clear();
+            foreach (var l in _lyrics.Lyrics) LyricsLines.Add(l);
+            CurrentSongTitle = $"{song.Title} - {song.Artist}";
+            CurrentLyricLine = string.Empty;
+            _lastLyricIdx = -1;
+            DetailTitle = song.Title;
+            DetailArtist = song.Artist;
+            DetailAlbum = song.Album;
+            DetailFormat = song.Format.ToUpperInvariant();
+            CoverImageData = await ExtractCoverImageAsync(song.FilePath);
+            OnPropertyChanged(nameof(DetailSpecs));
+            await _library.RecordPlayAsync(song.Id);
 
-        // 在最近播放视图中立即刷新
-        if (CurrentView == "recent")
-            await SwitchView();
+            if (CurrentView == "recent")
+                await SwitchView();
+        }
+        catch (Exception ex)
+        {
+            StatusText = $"更新歌曲详情失败: {ex.Message}";
+        }
     }
 
     // 播放/暂停切换：正在播放 → 暂停；暂停/停止 → 播放
@@ -462,7 +479,7 @@ public class MainViewModel : BaseViewModel
     }
 
     // 加载并播放当前选中歌曲
-    private void LoadAndPlay()
+    private async void LoadAndPlay()
     {
         try
         {
@@ -485,7 +502,7 @@ public class MainViewModel : BaseViewModel
             DetailArtist = SelectedSong.Artist;
             DetailAlbum = SelectedSong.Album;
             DetailFormat = SelectedSong.Format.ToUpperInvariant();
-            CoverImageData = ExtractCoverImage(SelectedSong.FilePath);
+            CoverImageData = await ExtractCoverImageAsync(SelectedSong.FilePath);
             OnPropertyChanged(nameof(DetailSpecs));
 
             _ = _library.RecordPlayAsync(SelectedSong.Id);
@@ -496,18 +513,21 @@ public class MainViewModel : BaseViewModel
         }
     }
 
-    // 从音频文件中提取内嵌封面图片
-    private static byte[]? ExtractCoverImage(string filePath)
+    // 从音频文件中提取内嵌封面图片（后台线程执行，避免 TagLib# 同步 I/O 阻塞 UI）
+    private static async Task<byte[]?> ExtractCoverImageAsync(string filePath)
     {
-        try
+        return await Task.Run(() =>
         {
-            var tagFile = TagLib.File.Create(filePath);
-            var pictures = tagFile.Tag.Pictures;
-            if (pictures != null && pictures.Length > 0)
-                return pictures[0].Data.Data;
-        }
-        catch { }
-        return null;
+            try
+            {
+                var tagFile = TagLib.File.Create(filePath);
+                var pictures = tagFile.Tag.Pictures;
+                if (pictures != null && pictures.Length > 0)
+                    return pictures[0].Data.Data;
+            }
+            catch { }
+            return null;
+        });
     }
 
     // 下一首：从播放队列取
@@ -654,38 +674,24 @@ public class MainViewModel : BaseViewModel
     // 切换视图：根据 CurrentView 切换歌曲列表
     private async Task SwitchView()
     {
-        Songs.Clear();
-        List<Song> results;
-
-        switch (CurrentView)
+        List<Song> results = CurrentView switch
         {
-            case "favorites":
-                results = await _library.GetFavoriteSongsAsync();
-                break;
-            case "recent":
-                results = await _library.GetRecentSongsAsync();
-                break;
-            default:
-                results = await _library.GetAllSongsAsync();
-                break;
-        }
+            "favorites" => await _library.GetFavoriteSongsAsync(),
+            "recent" => await _library.GetRecentSongsAsync(),
+            _ => await _library.GetAllSongsAsync(),
+        };
 
-        foreach (var song in results)
-            Songs.Add(song);
+        ReplaceSongs(results);
     }
 
     // 搜索歌曲：空关键字时返回全部
     private async Task Search()
     {
-        Songs.Clear();
-        List<Song> results;
-        if (string.IsNullOrWhiteSpace(SearchText))
-            results = await _library.GetAllSongsAsync();
-        else
-            results = await _library.SearchSongsAsync(SearchText);
+        var results = string.IsNullOrWhiteSpace(SearchText)
+            ? await _library.GetAllSongsAsync()
+            : await _library.SearchSongsAsync(SearchText);
 
-        foreach (var song in results)
-            Songs.Add(song);
+        ReplaceSongs(results);
     }
 
     // ========== 歌单操作 ==========
@@ -732,9 +738,7 @@ public class MainViewModel : BaseViewModel
     {
         await _library.ClearPlayHistoryAsync();
         if (CurrentView == "recent")
-        {
-            Songs.Clear();
-        }
+            Songs = new ObservableCollection<Song>();
     }
 
     // 从队列移除
@@ -829,21 +833,18 @@ public class MainViewModel : BaseViewModel
         }
 
         // 把歌单歌曲加载到主列表
-        Songs.Clear();
         var playlist = await _playlistService.GetPlaylistWithSongsAsync(SelectedPlaylist.Id);
         if (playlist != null)
-        {
-            foreach (var ps in playlist.PlaylistSongs)
-                Songs.Add(ps.Song);
-        }
+            ReplaceSongs(playlist.PlaylistSongs.Select(ps => ps.Song));
+        else
+            Songs = new ObservableCollection<Song>();
     }
 
     // 强制切换回全部歌曲视图
     public async Task SwitchToAllSongs()
     {
-        Songs.Clear();
         var songs = await _library.GetAllSongsAsync();
-        foreach (var s in songs) Songs.Add(s);
+        ReplaceSongs(songs);
     }
 
     // 刷新全部数据（歌曲 + 歌单）
@@ -859,9 +860,7 @@ public class MainViewModel : BaseViewModel
             ? await _library.GetAllSongsAsync()
             : await _library.SearchSongsAsync(SearchText);
 
-        Songs.Clear();
-        foreach (var song in songs)
-            Songs.Add(song);
+        ReplaceSongs(songs);
     }
 
     private async Task RefreshPlaylists()

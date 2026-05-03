@@ -403,7 +403,7 @@
                     <Border x:Name="ItemBorder"
                             Background="{TemplateBinding Background}"
                             Padding="{TemplateBinding Padding}"
-                            CornerRadius="12" 
+                            CornerRadius="12"
                             Margin="6,2">
                         <ContentPresenter VerticalAlignment="Center"/>
                     </Border>
