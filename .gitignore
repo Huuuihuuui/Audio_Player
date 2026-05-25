@@ -6,7 +6,5 @@ obj/
 *.cache
 *.vs/
 
-# IDE
-.vs/
-.idea/
-*.sln.DotSettings.user
+# Publish output
+publish/

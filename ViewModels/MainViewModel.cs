@@ -310,7 +310,7 @@ public class MainViewModel : BaseViewModel
     // 当前播放位置的格式化文本（如 "1:23"）
     public string CurrentPositionText => FormatTime(_playback.CurrentPositionSeconds);
 
-    // 总播放时长的格式化文本
+    // 总时长的格式化文本
     public string TotalDurationText => FormatTime(_playback.TotalDurationSeconds);
 
     // 进度百分比（0~100），Slider 双向绑定

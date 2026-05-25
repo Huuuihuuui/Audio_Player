@@ -15,7 +15,7 @@
     <SolidColorBrush x:Key="BrushBgSecondary" Color="#9e9e9e"/>     <!-- 侧栏/次要背景：苹果风浅灰 -->
     <SolidColorBrush x:Key="BrushBgCard" Color="#FFFFFF"/>          <!-- 卡片：纯白 -->
     <SolidColorBrush x:Key="BrushDarkWell" Color="#F0F0F3"/>        <!-- 频谱/嵌入槽：浅凹陷色 -->
-    <SolidColorBrush x:Key="BrushAccent" Color="#424242"/>          <!-- 强调色 也用灰色了 -->
+    <SolidColorBrush x:Key="BrushAccent" Color="#424242"/>
     
     <SolidColorBrush x:Key="BrushTextPrimary" Color="#1D1D1F"/>     <!-- 主要文字：接近黑的深灰 -->
     <SolidColorBrush x:Key="BrushTextSecondary" Color="#86868B"/>   <!-- 次要文字：中灰 -->
@@ -23,18 +23,18 @@
     
     <SolidColorBrush x:Key="BrushBorder" Color="#E5E5E7"/>          <!-- 分割线：极淡的灰色 -->
     <SolidColorBrush x:Key="BrushButtonBg" Color="#ECECED"/>        <!-- 按钮默认色 -->
-    <SolidColorBrush x:Key="BrushHover" Color="#11000008"/>         <!-- 悬停 透明度大-->
-    <SolidColorBrush x:Key="BrushSelection" Color="#22000008"/>     <!-- 选中 透明度变小 -->
-    <SolidColorBrush x:Key="BrushActive" Color="#007AFF20"/>        <!-- 当前播放高亮 -->
+    <SolidColorBrush x:Key="BrushHover" Color="#11000008"/>
+    <SolidColorBrush x:Key="BrushSelection" Color="#22000008"/>
+    <SolidColorBrush x:Key="BrushActive" Color="#007AFF20"/>
 
     <!-- ============================================================ -->
-    <!-- 播放队列面板专用笔刷（颜色自行填充） -->
+    <!-- 播放队列面板专用笔刷 -->
     <!-- ============================================================ -->
     <SolidColorBrush x:Key="BrushQueuePanelBg" Color="#d0d0d0"/>          <!-- 队列面板背景 -->
-    <SolidColorBrush x:Key="BrushQueueItemText" Color="#000000"/>         <!-- 队列项文字颜色 -->
-    <SolidColorBrush x:Key="BrushQueueItemArtist" Color="#000000"/>       <!-- 队列项艺术家文字颜色 -->
-    <SolidColorBrush x:Key="BrushQueuePlayingBg" Color="#606060"/>        <!-- 队列当前播放项背景 -->
-    <SolidColorBrush x:Key="BrushQueuePlayingText" Color="#000000"/>      <!-- 队列当前播放项文字 -->
+    <SolidColorBrush x:Key="BrushQueueItemText" Color="#000000"/>
+    <SolidColorBrush x:Key="BrushQueueItemArtist" Color="#000000"/>
+    <SolidColorBrush x:Key="BrushQueuePlayingBg" Color="#606060"/>
+    <SolidColorBrush x:Key="BrushQueuePlayingText" Color="#000000"/>
 
     <!-- ============================================================ -->
     <!-- 阴影 -->
@@ -84,7 +84,7 @@
         <Setter Property="Background" Value="{StaticResource BrushButtonBg}"/>
         <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}"/>
         <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="Padding" Value="16,8"/> <!-- 增加内边距更显高级 -->
+        <Setter Property="Padding" Value="16,8"/>
         <Setter Property="FontSize" Value="12"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
@@ -96,7 +96,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <!-- 圆角提升至 10px，增加平滑度 -->
+                    <!-- 圆角 10，悬停背景 + 按下缩放 -->
                     <Border x:Name="border" 
                             Background="{TemplateBinding Background}"
                             CornerRadius="10" 
@@ -105,11 +105,11 @@
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                     <ControlTemplate.Triggers>
-                        <!-- 悬停时使用 Accent 颜色，但不切换，而是通过视觉反馈 -->
+                        <!-- 悬停 -->
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="border" Property="Background" Value="{StaticResource BrushHover}"/>
                         </Trigger>
-                        <!-- 增加按下时的反馈 -->
+                        <!-- 按下 -->
                         <Trigger Property="IsPressed" Value="True">
                             <Setter Property="RenderTransform">
                                 <Setter.Value>
@@ -122,7 +122,7 @@
             </Setter.Value>
         </Setter>
         <Style.Triggers>
-            <!-- 保留你的缩放动画，但缩放比例调微小一点，更符合极简直觉 -->
+            <!-- 悬停缩放动画 -->
             <EventTrigger RoutedEvent="Mouse.MouseEnter">
                 <BeginStoryboard>
                     <Storyboard>
@@ -179,11 +179,11 @@
         </Setter>
     </Style>
 
-    <!-- TextBox：极简白色版 (保持原有逻辑，优化边框交互) -->
+    <!-- TextBox：透明背景，聚焦时显示底边框 -->
     <Style TargetType="TextBox">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}"/>
-        <Setter Property="BorderThickness" Value="0,0,0,1"/> <!-- 增加一条极细的底边框 -->
+        <Setter Property="BorderThickness" Value="0,0,0,1"/>
         <Setter Property="BorderBrush" Value="Transparent"/>
         <Setter Property="Padding" Value="2,4"/>
         <Setter Property="CaretBrush" Value="{StaticResource BrushAccent}"/>
@@ -199,13 +199,13 @@
     </Style>
 
     <Style TargetType="Slider">
-        <Setter Property="Background" Value="{StaticResource BrushBorder}"/> <!-- 轨道底色改用更淡的分割线色 -->
+        <Setter Property="Background" Value="{StaticResource BrushBorder}"/>
         <Setter Property="Foreground" Value="{StaticResource BrushAccent}"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Slider">
-                    <Grid Height="20" Background="Transparent"> <!-- 增加热区高度方便点击 -->
+                    <Grid Height="20" Background="Transparent">
                         <Border x:Name="TrackBackground" 
                                 Background="{TemplateBinding Background}" 
                                 Height="4" CornerRadius="2" VerticalAlignment="Center"/>
@@ -218,7 +218,6 @@
                                 <Thumb Width="14" Height="14" Cursor="Hand">
                                     <Thumb.Template>
                                         <ControlTemplate TargetType="Thumb">
-                                            <!-- 滑块改为纯色，阴影颜色改为深灰而非红色 -->
                                             <Ellipse Fill="White" Stroke="{TemplateBinding Foreground}" StrokeThickness="1"
                                                      Width="14" Height="14">
                                                 <Ellipse.Effect>
@@ -237,7 +236,7 @@
     </Style>
 
     <Style TargetType="ScrollBar">
-        <Setter Property="Width" Value="4"/> <!-- 进一步收窄 -->
+        <Setter Property="Width" Value="4"/>
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -254,7 +253,7 @@
                                                     CornerRadius="2" MinHeight="40">
                                             </Border>
                                             <ControlTemplate.Triggers>
-                                                <!-- 悬停时变宽变深，这样更高级 -->
+                                                <!-- 悬停 -->
                                                 <Trigger Property="IsMouseOver" Value="True">
                                                     <Setter TargetName="ThumbBorder" Property="Background" Value="{StaticResource BrushTextSecondary}"/>
                                                     <Setter TargetName="ThumbBorder" Property="Opacity" Value="0.8"/>
@@ -281,7 +280,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ContextMenu">
-                    <!-- 关键：增加 ShadowMedium 让菜单浮起来 -->
+                    <!-- 白色卡片 + 阴影 -->
                     <Border Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
@@ -300,7 +299,6 @@
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}"/>
         <Setter Property="Padding" Value="12,8"/>
-        <!-- 核心点：必须设置这个，否则子菜单的文字会继承错误的颜色 -->
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -350,14 +348,12 @@
                         </Popup>
                     </Grid>
                     <ControlTemplate.Triggers>
-                        <!-- 只有有子项时才显示箭头 -->
-                        <Trigger Property="HasItems" Value="True">
+                                        <Trigger Property="HasItems" Value="True">
                             <Setter TargetName="RightArrow" Property="Visibility" Value="Visible"/>
                         </Trigger>
                         <Trigger Property="IsHighlighted" Value="True">
                             <Setter TargetName="border" Property="Background" Value="{StaticResource BrushSelection}"/>
-                            <!-- 确保高亮时文字依然是深色 -->
-                            <Setter Property="Foreground" Value="{StaticResource BrushAccent}"/>
+                                            <Setter Property="Foreground" Value="{StaticResource BrushAccent}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -365,14 +361,14 @@
         </Setter>
     </Style>
 
-    <!-- ListBox：保持简洁透明 (无需修改，发送下一段) -->
+    <!-- ListBox：透明背景 -->
     <Style TargetType="ListBox">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="0"/>
     </Style>
 
     <Style TargetType="ToolTip">
-        <Setter Property="Background" Value="#E6212121"/> <!-- 深色半透明背景 -->
+        <Setter Property="Background" Value="#E6212121"/>
         <Setter Property="Foreground" Value="White"/>
         <Setter Property="Padding" Value="8,4"/>
         <Setter Property="BorderThickness" Value="0"/>
@@ -391,7 +387,7 @@
         </Setter>
     </Style>
 
-    <!-- 歌曲列表项：现代极简版 (深灰播放 + 浅灰悬停) -->
+    <!-- 歌曲列表项：透明底 + 圆角 8 + 选中/悬停/当前播放三种高亮 -->
     <Style x:Key="SongItemStyle" TargetType="ListBoxItem">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}"/>
@@ -418,13 +414,10 @@
         </Setter>
 
         <Style.Triggers>
-            <!-- 1. 悬停状态：显示为浅灰色 -->
             <Trigger Property="IsMouseOver" Value="True">
-                <!-- 这里建议使用之前定义的 BrushHover (#00000008) 或 BrushBgSecondary -->
                 <Setter Property="Background" Value="{StaticResource BrushHover}"/>
             </Trigger>
 
-            <!-- 2. 正在播放状态：显示为深灰色，且放在最后以覆盖悬停效果 -->
             <DataTrigger Value="True">
                 <DataTrigger.Binding>
                     <MultiBinding Converter="{StaticResource IsCurrentSong}">
@@ -433,7 +426,6 @@
                                  RelativeSource="{RelativeSource AncestorType=ListBox}"/>
                     </MultiBinding>
                 </DataTrigger.Binding>
-                <!-- 这里的深灰色建议使用 #E5E5E7 或 #D1D1D6 左右的色值 -->
                 <Setter Property="Background" Value="#dddddd"/> 
                 <Setter Property="Foreground" Value="{StaticResource BrushAccent}"/>
                 <Setter Property="FontWeight" Value="Bold"/>
@@ -441,13 +433,12 @@
         </Style.Triggers>
     </Style>
 
-    <!-- 频谱控件模板 (逻辑保持简洁，重点在 Canvas 内容) -->
+    <!-- 频谱控件模板 -->
     <Style TargetType="views:SpectrumControl">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="views:SpectrumControl">
-                    <!-- 确保频谱不会溢出圆角容器 -->
                     <Border Background="{TemplateBinding Background}" CornerRadius="8" ClipToBounds="True">
                         <Canvas x:Name="PART_Canvas"/>
                     </Border>
@@ -456,7 +447,7 @@
         </Setter>
     </Style>
 
-    <!-- 专门给音量条用的样式：取消悬停变色 -->
+    <!-- 音量滑块：去悬停变色 -->
     <Style x:Key="SliderStyle" TargetType="Slider" BasedOn="{StaticResource {x:Type Slider}}">
         <Setter Property="Template">
             <Setter.Value>
@@ -468,7 +459,6 @@
                                 <RepeatButton Background="{StaticResource BrushAccent}" Height="3" BorderThickness="0">
                                     <RepeatButton.Template>
                                         <ControlTemplate TargetType="RepeatButton">
-                                            <!-- 纯色填充，无任何交互逻辑 -->
                                             <Border Background="{TemplateBinding Background}"/>
                                         </ControlTemplate>
                                     </RepeatButton.Template>
@@ -485,23 +475,20 @@
                             </Track.Thumb>
                         </Track>
                     </Grid>
-                    <!-- 此处不添加任何 IsMouseOver 的 Trigger -->
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
 
 
-    <!-- 底部导航栏调用 -->
-    <!-- 歌名样式 -->
+    <!-- 底部栏文字样式 -->
     <Style x:Key="TextSongName" TargetType="TextBlock">
         <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}"/>
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
-        <Setter Property="TextTrimming" Value="CharacterEllipsis"/> <!-- 超长显示省略号 -->
+        <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
     </Style>
 
-    <!-- 歌手名样式 -->
     <Style x:Key="TextArtistName" TargetType="TextBlock">
         <Setter Property="Foreground" Value="{StaticResource BrushTextSecondary}"/>
         <Setter Property="FontSize" Value="12"/>

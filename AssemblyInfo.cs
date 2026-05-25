@@ -1,3 +1,4 @@
+// 程序集主题信息
 using System.Windows;
 
 [assembly:ThemeInfo(

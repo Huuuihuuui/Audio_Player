@@ -441,7 +441,7 @@
                 <Grid Margin="16,12">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/> <!-- 高度自适应，不再写死 150 -->
+                        <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     
                     <Grid Margin="0,0,0,10">
@@ -464,7 +464,7 @@
                             MaxHeight="300" ScrollViewer.VerticalScrollBarVisibility="Auto"
                             ScrollViewer.CanContentScroll="False"
                             MouseDoubleClick="QueueList_MouseDoubleClick"
-                            ItemContainerStyle="{StaticResource SongItemStyle}"> <!-- 复用之前写好的悬停样式 -->
+                            ItemContainerStyle="{StaticResource SongItemStyle}">
                         <ListBox.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="从列表移除" Click="QueueRemove_Click"/>
@@ -489,27 +489,24 @@
             <Border Grid.Row="2" Background="{StaticResource BrushGradientBar}" Padding="20,10" BorderBrush="{StaticResource BrushBorder}" BorderThickness="0,1,0,0">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <!-- 左侧：歌曲信息 (由 250 缩小至 220，腾出空间给进度条) -->
+                        <!-- 左：歌曲信息 / 中：播放控制 / 右：音量 -->
                         <ColumnDefinition Width="220"/>
-                        <!-- 中间：核心控制区 (拉长) -->
                         <ColumnDefinition Width="*"/>
-                        <!-- 右侧：音量与列表 (由 200 增加至 220，容纳列表按钮) -->
+                        <ColumnDefinition Width="220"/>
                         <ColumnDefinition Width="220"/>
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="10,0">
-                        <!-- 直接从歌曲对象中取 Title -->
                         <TextBlock Text="{Binding CurrentPlayingSong.Title, FallbackValue='未在播放'}" 
                                 Style="{StaticResource TextSongName}"/>
                         
-                        <!-- 直接从歌曲对象中取 Artist -->
                         <TextBlock Text="{Binding CurrentPlayingSong.Artist, FallbackValue='未知艺术家'}" 
                                 Style="{StaticResource TextArtistName}"/>
                     </StackPanel>
 
                     <!-- 2. 中间：控制按钮 + 进度条 (均匀排布，进度条最长化) -->
                     <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                        <!-- 按钮行：去背景、均匀间距 -->
+                        <!-- 播放控制按钮 -->
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,4">
                             
                             <Button Content="{Binding PlayModeText}" Command="{Binding CyclePlayModeCommand}"
@@ -520,7 +517,6 @@
                                     Background="Transparent" Foreground="{StaticResource BrushTextPrimary}" 
                                     FontSize="18" Margin="10,0" Padding="5" ToolTip="上一首"/>
                             
-                            <!-- 播放按钮 -->
                             <Button Content="{Binding PlayPauseText}" Command="{Binding PlayPauseCommand}"
                                     Style="{StaticResource PlayPauseButtonStyle}" ToolTip="{Binding PlayPauseStatusText}" FontFamily="Segoe MDL2 Assets"/>
                             
@@ -537,7 +533,7 @@
 
                         </StackPanel>
 
-                        <!-- 进度条行：拉满 -->
+                        <!-- 进度条 -->
                         <Grid Height="24" Margin="10,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -551,18 +547,16 @@
                                     Value="{Binding ProgressPercent, Mode=TwoWay}" Style="{StaticResource SliderStyle}"
                                     Minimum="0" Maximum="100" IsMoveToPointEnabled="True"/>
                             
-                            <!-- 找到右侧显示总时间的 TextBlock -->
                             <TextBlock Grid.Column="2" Text="{Binding TotalDurationText}"
                                     FontSize="10" Foreground="{StaticResource BrushTextSecondary}" VerticalAlignment="Center"/>
                         </Grid>
                     </StackPanel>
 
-                    <!-- 3. 右侧：音量条 + 播放列表按钮 (整合) -->
+                    <!-- 右侧：音量 -->
                     <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
                         <TextBlock Text="&#xE995;" FontFamily="Segoe MDL2 Assets"
                                 FontSize="14" Foreground="{StaticResource BrushTextSecondary}" VerticalAlignment="Center"/>
                         
-                        <!-- 应用 SliderStyle：无变色 -->
                         <Slider Value="{Binding Volume}" Minimum="0" Maximum="1" Width="100" Margin="10,0"
                                 Style="{StaticResource SliderStyle}" VerticalAlignment="Center" IsMoveToPointEnabled="True"/>
                     </StackPanel>

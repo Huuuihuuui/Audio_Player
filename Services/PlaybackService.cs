@@ -1,4 +1,4 @@
-// 音频播放引擎 —— 启动时把整首歌解码到内存，FFT 从内存读取，彻底避免双文件句柄冲突
+// 音频播放引擎 —— 整曲内存解码 + NAudio 播放 + 4096 点 FFT 频谱
 using NAudio.Wave;
 
 namespace MusicPlayer.Services;
@@ -214,8 +214,6 @@ public class PlaybackService : IDisposable
                 _magnitudes[i] = (float)Math.Sqrt(c.X * c.X + c.Y * c.Y);
             }
 
-            // 0dB 基准值。FFT 输出幅度通常在 1~500 范围，设为 500 意味着只有最强频率分量才接近 0dB
-            // 调大 → 整体压低；调小 → 整体抬高
             float refMag = 1f;
 
             // 64 柱对数频率 20Hz~8kHz → -60dB~0dB 归一化
